@@ -24,12 +24,15 @@ type GetterRows interface {
 
 // PsqlAddress used for work with postgres - addresses
 type PsqlAddress struct {
-	db *sql.DB
+	db  *sql.DB
+	get *template.Get
 }
 
 // NewPsqlAddress return a new pointer of PsqlAddress
 func NewPsqlAddress(db *sql.DB) *PsqlAddress {
-	return &PsqlAddress{db}
+	psql := &PsqlAddress{db, nil}
+	psql.get = template.NewGet(psql)
+	return psql
 }
 
 // scanRowProduct scan a row of the addresses table
@@ -72,8 +75,8 @@ func (s *PsqlAddress) GetRows(rows *sql.Rows) (interface{}, error) {
 
 // GetAll implement the interface address.Storage
 func (s *PsqlAddress) GetAll() (address.Models, error) {
-	gets := template.NewGet(s)
-	ms, err := gets.GetAll(s.db, psqlGetAllAddress)
+	//gets := template.NewGet(s) // Necesito moverla a la estrcutura
+	ms, err := s.get.GetAll(s.db, psqlGetAllAddress)
 	if v, ok := ms.(address.Models); ok {
 		return v, err
 	}
