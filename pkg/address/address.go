@@ -15,9 +15,12 @@ type Model struct {
 	UpdateAt     time.Time
 }
 
+type Models []*Model
+
 // Storage interface that must implement a db storage
 type Storage interface {
 	Create(*Model) error
+	GetAll() (Models, error)
 }
 
 // Service of address
@@ -33,4 +36,8 @@ func NewService(s Storage) *Service {
 // Create a new address
 func (s *Service) Create(m *Model) error {
 	return s.storage.Create(m)
+}
+
+func (s *Service) GetAll() (Models, error) {
+	return s.storage.GetAll()
 }
